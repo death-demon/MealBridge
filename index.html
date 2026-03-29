@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodSave — Rescue Good Food</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --surface: #1a1815;
+    --border: #2e2b28;
+    --terra: #e8652a;
+    --terra-dim: #b84d1a;
+    --green: #4a7c59;
+    --green-light: #6aad80;
+    --cream: #f5efe6;
+    --text-sub: #b0a898;
+    --muted: #8a8076;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 80%, rgba(232,101,42,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 20%, rgba(74,124,89,0.07) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── LAYOUT ── */
+  .page {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+
+  /* ── LOGO ── */
+  .logo-wrap {
+    text-align: center;
+    margin-bottom: 12px;
+    animation: fadeDown 0.7s ease both;
+  }
+
+  .logo-leaf {
+    font-size: 36px;
+    display: block;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 12px rgba(74,124,89,0.4));
+  }
+
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    color: var(--cream);
+  }
+
+  .logo-text span { color: var(--terra); }
+
+  /* ── TAGLINE ── */
+  .tagline {
+    font-size: 15px;
+    color: var(--text-sub);
+    text-align: center;
+    font-weight: 400;
+    margin-bottom: 6px;
+    animation: fadeDown 0.7s 0.1s ease both;
+    letter-spacing: 0.2px;
+  }
+
+  .tagline strong {
+    color: var(--green-light);
+    font-weight: 600;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 28px 0;
+    width: 100%;
+    max-width: 460px;
+    animation: fadeIn 0.7s 0.2s ease both;
+    opacity: 0;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+  }
+
+  .divider-text {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* ── PORTAL CARDS ── */
+  .portals {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    max-width: 620px;
+    animation: fadeUp 0.7s 0.25s ease both;
+    opacity: 0;
+  }
+
+  .portal-card {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 24px 28px;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s cubic-bezier(.2,.8,.3,1), border-color 0.25s, box-shadow 0.25s;
+  }
+
+  /* glow on hover */
+  .portal-card.customer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 110%, rgba(232,101,42,0.14) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .portal-card.restaurant::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 110%, rgba(74,124,89,0.14) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .portal-card:hover::before { opacity: 1; }
+
+  .portal-card.customer:hover {
+    border-color: rgba(232,101,42,0.45);
+    box-shadow: 0 8px 40px rgba(232,101,42,0.1);
+    transform: translateY(-4px);
+  }
+
+  .portal-card.restaurant:hover {
+    border-color: rgba(74,124,89,0.45);
+    box-shadow: 0 8px 40px rgba(74,124,89,0.1);
+    transform: translateY(-4px);
+  }
+
+  .portal-card:active { transform: translateY(-1px) scale(0.99); }
+
+  /* icon bubble */
+  .portal-icon {
+    width: 68px; height: 68px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.25s;
+  }
+
+  .portal-card:hover .portal-icon { transform: scale(1.08); }
+
+  .portal-card.customer .portal-icon {
+    background: rgba(232,101,42,0.12);
+    border: 1.5px solid rgba(232,101,42,0.25);
+  }
+
+  .portal-card.restaurant .portal-icon {
+    background: rgba(74,124,89,0.12);
+    border: 1.5px solid rgba(74,124,89,0.25);
+  }
+
+  .portal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .portal-desc {
+    font-size: 13px;
+    color: var(--text-sub);
+    line-height: 1.6;
+    font-weight: 400;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 24px;
+  }
+
+  .portal-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 0.2px;
+    transition: opacity 0.2s, transform 0.15s;
+    pointer-events: none; /* card itself is the link */
+  }
+
+  .portal-card.customer .portal-btn {
+    background: var(--terra);
+    color: white;
+  }
+
+  .portal-card.restaurant .portal-btn {
+    background: var(--green);
+    color: white;
+  }
+
+  .portal-card:hover .portal-btn { opacity: 0.92; }
+
+  .portal-arrow {
+    font-size: 14px;
+    margin-left: 5px;
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+
+  .portal-card:hover .portal-arrow { transform: translateX(3px); }
+
+  /* feature tags */
+  .portal-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tag {
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 100px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: rgba(255,255,255,0.03);
+  }
+
+  /* ── FOOTER NOTE ── */
+  .footer-note {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    animation: fadeIn 1s 0.5s ease both;
+    opacity: 0;
+    line-height: 1.7;
+  }
+
+  .footer-note a {
+    color: var(--text-sub);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: color 0.2s;
+  }
+
+  .footer-note a:hover { color: var(--cream); }
+
+  .footer-note .dot { margin: 0 8px; color: var(--border); }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: flex;
+    gap: 28px;
+    margin-bottom: 32px;
+    animation: fadeIn 0.7s 0.15s ease both;
+    opacity: 0;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--cream);
+    display: block;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+    letter-spacing: 0.3px;
+  }
+
+  .stat-sep {
+    width: 1px;
+    background: var(--border);
+    align-self: stretch;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 540px) {
+    .logo-text { font-size: 34px; }
+    .portals { flex-direction: column; max-width: 360px; }
+    .portal-card { padding: 26px 20px 22px; }
+    .stats-row { gap: 18px; }
+    .stat-num { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- LOGO -->
+  <div class="logo-wrap">
+    <span class="logo-leaf">🌿</span>
+    <div class="logo-text">Food<span>Save</span></div>
+  </div>
+
+  <p class="tagline">Rescuing good food across Pakistan — <strong>zero waste, real savings</strong></p>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat">
+      <span class="stat-num">2.4t</span>
+      <div class="stat-label">Food Rescued</div>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat">
+      <span class="stat-num">34</span>
+      <div class="stat-label">Restaurants</div>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat">
+      <span class="stat-num">60%</span>
+      <div class="stat-label">Avg Discount</div>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat">
+      <span class="stat-num">1.2k</span>
+      <div class="stat-label">Happy Users</div>
+    </div>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-text">Choose your portal</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- PORTAL CARDS -->
+  <div class="portals">
+
+    <!-- CUSTOMER -->
+    <a class="portal-card customer" href="/customer">
+      <div class="portal-icon">🛍️</div>
+      <div class="portal-title">I'm a Customer</div>
+      <p class="portal-desc">Browse surplus meals near you at up to 70% off — reserve in seconds, pick up before closing.</p>
+      <div class="portal-tags">
+        <span class="tag">Browse Meals</span>
+        <span class="tag">Reserve & Pay</span>
+        <span class="tag">Navigate</span>
+      </div>
+      <div class="portal-btn">
+        Browse Food <span class="portal-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- RESTAURANT -->
+    <a class="portal-card restaurant" href="/restaurant">
+      <div class="portal-icon">🏪</div>
+      <div class="portal-title">I'm a Restaurant</div>
+      <p class="portal-desc">List your end-of-day surplus in under 60 seconds. Reduce waste, earn revenue, build goodwill.</p>
+      <div class="portal-tags">
+        <span class="tag">List Surplus</span>
+        <span class="tag">Set Pricing</span>
+        <span class="tag">Track Pickups</span>
+      </div>
+      <div class="portal-btn">
+        Restaurant Panel <span class="portal-arrow">→</span>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-note">
+    Are you an operator?
+    <a href="/admin">Admin Dashboard</a>
+    <span class="dot">·</span>
+    <a href="#">Contact Us</a>
+    <span class="dot">·</span>
+    <a href="#">How It Works</a>
+    <br>
+    <span style="margin-top:6px;display:inline-block;color:#5a5248">© 2026 FoodSave Pakistan. Fighting food waste, one meal at a time.</span>
+  </div>
+
+</div>
+
+</body>
+</html>

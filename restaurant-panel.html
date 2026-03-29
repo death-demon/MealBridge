@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MealBridge — Restaurant Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f3ee;
+    --surface: #ffffff;
+    --surface2: #f0ebe3;
+    --border: #ddd6cc;
+    --terra: #c94f1a;
+    --terra-light: #f5ede8;
+    --green: #2d6a4f;
+    --green-light: #e8f3ee;
+    --text: #1a1612;
+    --text-sub: #7a6f65;
+    --muted: #b0a89e;
+    --gold: #b8872a;
+    --gold-light: #fdf4e3;
+    --danger: #c13535;
+    --danger-light: #fceaea;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── LAYOUT ── */
+  .layout { display: flex; min-height: 100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 250px;
+    background: var(--text);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    flex-shrink: 0;
+    overflow: visible;
+  }
+
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    padding: 30px 20px 20px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    overflow: visible;
+  }
+
+  .sidebar-sublogo {
+    display: flex;
+    flex-direction: column;
+    overflow:visible;
+  }
+
+  .logo-main {
+    font-family: 'Space Grotesk', sans-serif;
+    display:flex;
+    align-items:center;
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
+    overflow: visible;
+  }
+
+  .logo-main span { 
+    display: inline-block;
+    color: #e8652a; 
+    line-height: inherit;
+  }
+  .logo-img {
+  width: 70px;
+  height: auto;
+  display: block;
+}
+
+  .logo-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    margin-top: 3px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .restaurant-tag {
+    margin: 14px 16px;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.07);
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .restaurant-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+  }
+
+  .restaurant-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 3px;
+  }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #4aaa6a;
+    flex-shrink: 0;
+  }
+
+  .nav-section {
+    padding: 16px 12px 8px;
+    flex: 1;
+  }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.25);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0 8px;
+    margin-bottom: 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+    transition: all 0.2s;
+    margin-bottom: 2px;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
+
+  .nav-item.active {
+    background: var(--terra);
+    color: white;
+  }
+
+  .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--terra);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 100px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  .nav-item.active .nav-badge { background: rgba(255,255,255,0.25); }
+
+  .sidebar-footer {
+    padding: 14px 12px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  /* ── MAIN ── */
+  .main { flex: 1; overflow-y: auto; }
+
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .topbar-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: var(--radius-sm);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    letter-spacing: 0.1px;
+  }
+
+  .btn-primary { background: var(--terra); color: white; }
+  .btn-primary:hover { background: #a83e12; }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 1.5px solid var(--border);
+  }
+
+  .btn-outline:hover { background: var(--surface2); }
+
+  .btn-success { background: var(--green); color: white; }
+  .btn-success:hover { background: #235540; }
+
+  .btn-ghost { background: transparent; color: var(--text-sub); border: none; padding: 9px 12px; }
+  .btn-ghost:hover { background: var(--surface2); }
+
+  /* ── CONTENT ── */
+  .content { padding: 28px; }
+
+  /* ── STAT CARDS ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 26px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .stat-card .s-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .stat-card .s-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .stat-card .s-sub {
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-top: 4px;
+  }
+
+  .stat-card.green { border-left: 3px solid var(--green); }
+  .stat-card.terra { border-left: 3px solid var(--terra); }
+  .stat-card.gold { border-left: 3px solid var(--gold); }
+
+  /* ── SECTION ── */
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  /* ── LISTING FORM ── */
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+  .form-full { grid-column: 1 / -1; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  .field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-sub);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 13px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--terra);
+  }
+
+  .field textarea { resize: vertical; min-height: 80px; }
+
+  .photo-upload {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    text-align: center;
+    cursor: pointer;
+    background: var(--bg);
+    transition: all 0.2s;
+  }
+
+  .photo-upload:hover {
+    border-color: var(--terra);
+    background: var(--terra-light);
+  }
+
+  .photo-upload .upload-icon { font-size: 32px; margin-bottom: 8px; }
+  .photo-upload .upload-text { font-size: 13px; color: var(--text-sub); }
+  .photo-upload .upload-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* ── PRICE SUGGESTION ── */
+  .price-suggest {
+    background: var(--green-light);
+    border: 1px solid #b3d8c4;
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .price-suggest .ps-icon { font-size: 18px; }
+  .price-suggest .ps-text { font-size: 13px; color: var(--green); }
+  .price-suggest .ps-text strong { font-weight: 700; }
+  .price-suggest .ps-apply {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--green);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  /* ── TIME PICKER ── */
+  .time-row { display: flex; gap: 10px; align-items: center; }
+  .time-sep { font-size: 18px; color: var(--muted); flex-shrink: 0; }
+
+  /* ── ACTIVE LISTINGS ── */
+  .listings-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--surface2); }
+  th {
+    padding: 11px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  td { padding: 13px 16px; border-top: 1px solid var(--border); font-size: 13.5px; }
+
+  tr:hover td { background: var(--bg); }
+
+  .meal-cell { display: flex; align-items: center; gap: 10px; }
+  .meal-thumb { font-size: 24px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--surface2); border-radius: 8px; }
+  .meal-info .name { font-weight: 600; font-size: 14px; color: var(--text); }
+  .meal-info .cat { font-size: 11px; color: var(--muted); }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .pill-active { background: var(--green-light); color: var(--green); border: 1px solid #b3d8c4; }
+  .pill-expired { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+  .pill-closing { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+
+  .qty-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .qty-track {
+    width: 60px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .qty-fill {
+    height: 100%;
+    border-radius: 100px;
+    background: var(--green);
+    transition: width 0.5s;
+  }
+
+  .action-btns { display: flex; gap: 6px; }
+
+  .icon-btn {
+    width: 30px; height: 30px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.15s;
+    color: var(--text-sub);
+  }
+
+  .icon-btn:hover { background: var(--surface2); }
+  .icon-btn.danger:hover { background: var(--danger-light); border-color: var(--danger); color: var(--danger); }
+  .icon-btn.success:hover { background: var(--green-light); border-color: var(--green); color: var(--green); }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    background: var(--text);
+    color: white;
+    padding: 14px 20px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    z-index: 999;
+    display: none;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  /* ── PAGE VIEWS ── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ── MEMBERSHIP FORM ── */
+  .membership-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    max-width: 640px;
+    box-shadow: var(--shadow);
+  }
+
+  .membership-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .membership-desc {
+    font-size: 13px;
+    color: var(--text-sub);
+    margin-bottom: 22px;
+    line-height: 1.6;
+  }
+
+  .checklist { margin: 18px 0; }
+  .checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 13.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .checklist-item:last-child { border-bottom: none; }
+  .check-icon { color: var(--green); font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .stats-row { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 800px) {
+    .sidebar { display: none; }
+    .form-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      
+      <img class="logo-img" src="Symbol1.png">
+      <div class="sidebar-sublogo">
+      <!--  <div class="logo-main">Meal<span>Bridge</span><img class="logo-img" src="Symbol1.png"></div>
+    --><div class="logo-main">
+      Meal<span>Bridge</span>
+      </div>
+      <div class="logo-sub">Partners' Panel</div>
+   
+      </div>
+     </div>
+
+    <div class="restaurant-tag">
+      <div class="restaurant-name">Farhan's Kitchen</div>
+      <div class="restaurant-status">
+        <div class="status-dot"></div>
+        Active · Approved Member
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Menu</div>
+
+      <div class="nav-item active" onclick="switchView('dashboard',this)">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="switchView('new-listing',this)">
+        <span class="nav-icon">➕</span> New Listing
+      </div>
+      <div class="nav-item" onclick="switchView('listings',this)">
+        <span class="nav-icon">📋</span> My Listings
+        <span class="nav-badge">4</span>
+      </div>
+      <div class="nav-item" onclick="switchView('collected',this)">
+        <span class="nav-icon">✅</span> Mark Collected
+      </div>
+      <div class="nav-item" onclick="switchView('membership',this)">
+        <span class="nav-icon">🏷️</span> Membership
+      </div>
+
+      <div class="nav-label" style="margin-top:16px">Account</div>
+      <div class="nav-item" onclick="switchView('profile-rest',this)">
+        <span class="nav-icon">🏪</span> Restaurant Profile
+      </div>
+      <div class="nav-item" onclick="alert('Payout reports coming soon')">
+        <span class="nav-icon">💰</span> Payouts
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="nav-item" style="color:rgba(255,255,255,0.4)">
+        <span class="nav-icon">❓</span> Help & Support
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-actions">
+        <span style="font-size:12px;color:var(--muted)">Today: Friday, 27 Mar 2026</span>
+        <button class="btn btn-primary" onclick="switchView('new-listing', document.querySelectorAll('.nav-item')[1])">
+          ➕ New Listing
+        </button>
+      </div>
+    </div>
+
+    <!-- DASHBOARD VIEW -->
+    <div class="view active content" id="view-dashboard">
+      <div class="stats-row">
+        <div class="stat-card green">
+          <div class="s-label">Active Listings</div>
+          <div class="s-val">4</div>
+          <div class="s-sub">2 closing in &lt;1 hr</div>
+        </div>
+        <div class="stat-card terra">
+          <div class="s-label">Today's Reservations</div>
+          <div class="s-val">17</div>
+          <div class="s-sub">PKR 3,060 revenue</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="s-label">Food Saved This Month</div>
+          <div class="s-val">142<span style="font-size:14px;font-weight:400"> meals</span></div>
+          <div class="s-sub">~71 kg rescued</div>
+        </div>
+        <div class="stat-card">
+          <div class="s-label">Pickup Rate</div>
+          <div class="s-val">94<span style="font-size:16px">%</span></div>
+          <div class="s-sub">↑ vs 88% last month</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <div class="section-title">Today's Active Listings</div>
+        <button class="btn btn-outline" onclick="switchView('listings', document.querySelectorAll('.nav-item')[2])">View All</button>
+      </div>
+
+      <div class="listings-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Meal</th>
+              <th>Status</th>
+              <th>Pickup Window</th>
+              <th>Qty Remaining</th>
+              <th>Price</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="meal-cell"><div class="meal-thumb">🍛</div><div class="meal-info"><div class="name">Biryani Surprise Box</div><div class="cat">Desi · Main Course</div></div></div></td>
+              <td><span class="pill pill-closing">⏳ Closing Soon</span></td>
+              <td style="font-size:12px;color:var(--text-sub)">8:00 – 9:30 PM</td>
+              <td>
+                <div class="qty-bar">
+                  <div class="qty-track"><div class="qty-fill" style="width:40%"></div></div>
+                  <span>3 / 8</span>
+                </div>
+              </td>
+              <td><strong>PKR 180</strong><br><span style="font-size:11px;color:var(--muted);text-decoration:line-through">450</span></td>
+              <td>
+                <div class="action-btns">
+                  <div class="icon-btn" title="Edit" onclick="alert('Edit listing')">✏️</div>
+                  <div class="icon-btn success" title="Mark all collected" onclick="markCollected(this)">✅</div>
+                  <div class="icon-btn danger" title="Remove listing" onclick="removeListing(this)">🗑</div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><div class="meal-cell"><div class="meal-thumb">🥐</div><div class="meal-info"><div class="name">Assorted Pastry Pack</div><div class="cat">Bakery · Snack</div></div></div></td>
+              <td><span class="pill pill-active">● Active</span></td>
+              <td style="font-size:12px;color:var(--text-sub)">7:00 – 9:00 PM</td>
+              <td>
+                <div class="qty-bar">
+                  <div class="qty-track"><div class="qty-fill" style="width:75%"></div></div>
+                  <span>6 / 8</span>
+                </div>
+              </td>
+              <td><strong>PKR 250</strong><br><span style="font-size:11px;color:var(--muted);text-decoration:line-through">700</span></td>
+              <td>
+                <div class="action-btns">
+                  <div class="icon-btn" onclick="alert('Edit listing')">✏️</div>
+                  <div class="icon-btn success" onclick="markCollected(this)">✅</div>
+                  <div class="icon-btn danger" onclick="removeListing(this)">🗑</div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><div class="meal-cell"><div class="meal-thumb">🫕</div><div class="meal-info"><div class="name">Daal Makhani Combo</div><div class="cat">Desi · Full Meal</div></div></div></td>
+              <td><span class="pill pill-active">● Active</span></td>
+              <td style="font-size:12px;color:var(--text-sub)">7:30 – 8:30 PM</td>
+              <td>
+                <div class="qty-bar">
+                  <div class="qty-track"><div class="qty-fill" style="width:100%"></div></div>
+                  <span>5 / 5</span>
+                </div>
+              </td>
+              <td><strong>PKR 120</strong><br><span style="font-size:11px;color:var(--muted);text-decoration:line-through">300</span></td>
+              <td>
+                <div class="action-btns">
+                  <div class="icon-btn" onclick="alert('Edit listing')">✏️</div>
+                  <div class="icon-btn success" onclick="markCollected(this)">✅</div>
+                  <div class="icon-btn danger" onclick="removeListing(this)">🗑</div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- NEW LISTING VIEW -->
+    <div class="view content" id="view-new-listing">
+      <p style="font-size:13px;color:var(--text-sub);margin-bottom:22px">Fill in the details below — target: under 60 seconds ⚡</p>
+
+      <div class="form-card">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:18px;color:var(--text)">📝 Listing Details</div>
+
+        <div class="form-grid">
+          <div class="field form-full">
+            <label>Meal / Item Name *</label>
+            <input type="text" placeholder="e.g. Biryani Surprise Box, Pastry Pack × 6" id="mealName">
+          </div>
+
+          <div class="field">
+            <label>Category</label>
+            <select>
+              <option>🍛 Desi / Main Course</option>
+              <option>🥐 Bakery / Pastry</option>
+              <option>🍕 Pizza / Fast Food</option>
+              <option>🫕 Rice / Biryani</option>
+              <option>🍮 Dessert / Sweets</option>
+              <option>🧃 Drinks / Beverages</option>
+              <option>🥗 Salads / Sides</option>
+              <option>📦 Mixed Surprise Box</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Quantity Available *</label>
+            <input type="number" placeholder="e.g. 8" min="1" max="100" id="qtyInput">
+          </div>
+
+          <div class="field form-full">
+            <label>Description (optional)</label>
+            <textarea placeholder="Briefly describe what's inside — customers appreciate honest details"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:18px">📸 Photo Upload</div>
+        <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
+          <div class="upload-icon">📷</div>
+          <div class="upload-text">Click to upload a photo of the food</div>
+          <div class="upload-hint">JPG, PNG · Max 5MB · Customers trust listings with photos</div>
+          <input type="file" id="photoInput" accept="image/*" hidden onchange="previewPhoto(this)">
+        </div>
+        <div id="photoPreview" style="display:none;margin-top:12px;text-align:center">
+          <img id="previewImg" style="max-height:160px;border-radius:10px;border:1px solid var(--border)">
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:18px">💰 Pricing</div>
+        <div class="form-grid three">
+          <div class="field">
+            <label>Original Price (PKR) *</label>
+            <input type="number" placeholder="e.g. 450" id="origPrice" oninput="suggestPrice()">
+          </div>
+          <div class="field">
+            <label>Your Listing Price (PKR) *</label>
+            <input type="number" placeholder="e.g. 180" id="listPrice">
+          </div>
+          <div class="field">
+            <label>Discount %</label>
+            <input type="text" placeholder="Auto-calculated" id="discountDisplay" readonly style="color:var(--green);font-weight:600">
+          </div>
+        </div>
+
+        <div class="price-suggest" id="priceSuggest" style="display:none">
+          <div class="ps-icon">🤖</div>
+          <div class="ps-text">Auto-suggestion: <strong id="suggestedVal">—</strong> (60% off recommended for quick pickup)</div>
+          <div class="ps-apply" onclick="applyPrice()">Apply →</div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:18px">⏰ Pickup Window</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>From</label>
+            <input type="time" value="19:00" id="pickupFrom">
+          </div>
+          <div class="field">
+            <label>Until</label>
+            <input type="time" value="21:00" id="pickupUntil">
+          </div>
+          <div class="field">
+            <label>Pickup Date</label>
+            <input type="date" id="pickupDate">
+          </div>
+          <div class="field">
+            <label>Notes (optional)</label>
+            <input type="text" placeholder="e.g. Ask for Ahmed at counter">
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:4px">
+        <button class="btn btn-outline" onclick="resetForm()">Clear Form</button>
+        <button class="btn btn-primary" onclick="publishListing()" style="padding:12px 28px">🚀 Publish Listing</button>
+      </div>
+    </div>
+
+    <!-- LISTINGS VIEW -->
+    <div class="view content" id="view-listings">
+      <div class="section-head">
+        <div class="section-title">All Listings</div>
+        <button class="btn btn-outline">Filter ↓</button>
+      </div>
+      <div class="listings-table">
+        <table>
+          <thead>
+            <tr><th>Meal</th><th>Status</th><th>Pickup</th><th>Qty</th><th>Price</th><th>Reservations</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="meal-cell"><div class="meal-thumb">🍛</div><div class="meal-info"><div class="name">Biryani Surprise Box</div><div class="cat">Today</div></div></div></td>
+              <td><span class="pill pill-closing">⏳ Closing</span></td>
+              <td style="font-size:12px">8:00–9:30 PM</td>
+              <td>3 / 8</td>
+              <td>PKR 180</td>
+              <td><strong>5</strong> reserved</td>
+              <td><div class="action-btns"><div class="icon-btn" onclick="alert('Edit')">✏️</div><div class="icon-btn success" onclick="markCollected(this)">✅</div></div></td>
+            </tr>
+            <tr>
+              <td><div class="meal-cell"><div class="meal-thumb">🥐</div><div class="meal-info"><div class="name">Pastry Pack ×6</div><div class="cat">Today</div></div></div></td>
+              <td><span class="pill pill-active">● Active</span></td>
+              <td style="font-size:12px">7:00–9:00 PM</td>
+              <td>6 / 8</td>
+              <td>PKR 250</td>
+              <td><strong>2</strong> reserved</td>
+              <td><div class="action-btns"><div class="icon-btn" onclick="alert('Edit')">✏️</div><div class="icon-btn success" onclick="markCollected(this)">✅</div></div></td>
+            </tr>
+            <tr>
+              <td><div class="meal-cell"><div class="meal-thumb">🍮</div><div class="meal-info"><div class="name">Gulab Jamun Box</div><div class="cat">Yesterday</div></div></div></td>
+              <td><span class="pill pill-expired">Expired</span></td>
+              <td style="font-size:12px">8–9 PM</td>
+              <td>0 / 10</td>
+              <td>PKR 150</td>
+              <td><strong>10</strong> collected</td>
+              <td><div class="action-btns"><div class="icon-btn" onclick="alert('Duplicate')">📋</div></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MARK COLLECTED VIEW -->
+    <div class="view content" id="view-collected">
+      <p style="font-size:13px;color:var(--text-sub);margin-bottom:20px">Confirm which orders have been picked up by customers</p>
+      <div class="listings-table">
+        <table>
+          <thead>
+            <tr><th>Customer Code</th><th>Meal</th><th>Reserved At</th><th>Status</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong style="font-family:monospace;font-size:15px;color:var(--terra)">#FS-8821</strong></td>
+              <td>Biryani Surprise Box</td>
+              <td style="font-size:12px;color:var(--muted)">7:45 PM</td>
+              <td><span class="pill" style="background:#fff3e0;color:#e65100;border:1px solid #ffcc80">Awaiting Pickup</span></td>
+              <td><button class="btn btn-success" style="padding:7px 14px;font-size:12px" onclick="collectOrder(this)">✅ Confirm Collected</button></td>
+            </tr>
+            <tr>
+              <td><strong style="font-family:monospace;font-size:15px;color:var(--terra)">#FS-8819</strong></td>
+              <td>Biryani Surprise Box</td>
+              <td style="font-size:12px;color:var(--muted)">7:30 PM</td>
+              <td><span class="pill pill-active">Collected ✓</span></td>
+              <td><button class="btn btn-ghost" style="font-size:12px" disabled>Done</button></td>
+            </tr>
+            <tr>
+              <td><strong style="font-family:monospace;font-size:15px;color:var(--terra)">#FS-8814</strong></td>
+              <td>Pastry Pack ×6</td>
+              <td style="font-size:12px;color:var(--muted)">6:50 PM</td>
+              <td><span class="pill" style="background:#fff3e0;color:#e65100;border:1px solid #ffcc80">Awaiting Pickup</span></td>
+              <td><button class="btn btn-success" style="padding:7px 14px;font-size:12px" onclick="collectOrder(this)">✅ Confirm Collected</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MEMBERSHIP VIEW -->
+    <div class="view content" id="view-membership">
+      <div class="membership-card">
+        <div class="membership-title">🏷️ Apply for MealBridge Membership</div>
+        <div class="membership-desc">
+          Join our network of verified restaurants reducing food waste in Pakistan. 
+          Once approved, your listings go live immediately for thousands of nearby customers.
+        </div>
+
+        <div class="checklist">
+          <div class="checklist-item"><span class="check-icon">✓</span> Valid food business license (PSQCA / PNAC)</div>
+          <div class="checklist-item"><span class="check-icon">✓</span> Restaurant registered with local municipality</div>
+          <div class="checklist-item"><span class="check-icon">✓</span> Agreement to MealBridge food-safety standards</div>
+          <div class="checklist-item"><span class="check-icon">✓</span> At least 3 surplus listings per week commitment</div>
+        </div>
+
+        <div class="form-grid" style="margin-top:20px">
+          <div class="field">
+            <label>Restaurant Name *</label>
+            <input type="text" placeholder="Official registered name">
+          </div>
+          <div class="field">
+            <label>Owner / Manager Name *</label>
+            <input type="text" placeholder="Full legal name">
+          </div>
+          <div class="field">
+            <label>CNIC Number *</label>
+            <input type="text" placeholder="XXXXX-XXXXXXX-X">
+          </div>
+          <div class="field">
+            <label>Contact Number *</label>
+            <input type="text" placeholder="03XX-XXXXXXX">
+          </div>
+          <div class="field form-full">
+            <label>Full Address *</label>
+            <input type="text" placeholder="Street, Area, City">
+          </div>
+          <div class="field">
+            <label>License Number</label>
+            <input type="text" placeholder="Optional but recommended">
+          </div>
+          <div class="field">
+            <label>Restaurant Type</label>
+            <select>
+              <option>Desi Restaurant</option>
+              <option>Bakery / Café</option>
+              <option>Fast Food / Pizza</option>
+              <option>Buffet / Hotel</option>
+              <option>Street Food / Dhaba</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field form-full">
+            <label>Why do you want to join?</label>
+            <textarea placeholder="Tell us about your food waste situation and motivation..."></textarea>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;display:flex;gap:10px">
+          <button class="btn btn-primary" onclick="submitMembership()" style="padding:12px 28px">Submit Application</button>
+          <span style="font-size:12px;color:var(--muted);align-self:center">Admin reviews within 24 hours</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESTAURANT PROFILE VIEW -->
+    <div class="view content" id="view-profile-rest">
+      <div class="form-card" style="max-width:600px">
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:18px">🏪 Restaurant Profile</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Restaurant Name</label>
+            <input type="text" value="Al-Rehman Kitchen">
+          </div>
+          <div class="field">
+            <label>Phone</label>
+            <input type="text" value="0312-3456789">
+          </div>
+          <div class="field form-full">
+            <label>Address</label>
+            <input type="text" value="Block 14, Gulshan-e-Iqbal, Karachi">
+          </div>
+          <div class="field">
+            <label>Opening Time</label>
+            <input type="time" value="11:00">
+          </div>
+          <div class="field">
+            <label>Closing Time</label>
+            <input type="time" value="22:30">
+          </div>
+        </div>
+        <div style="margin-top:18px">
+          <button class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── VIEW SWITCHING ──
+function switchView(name, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  const titles = { dashboard:'Dashboard', 'new-listing':'New Listing', listings:'My Listings', collected:'Mark Collected', membership:'Apply for Membership', 'profile-rest':'Restaurant Profile' };
+  document.getElementById('pageTitle').textContent = titles[name] || name;
+}
+
+// ── PRICE SUGGESTION ──
+function suggestPrice() {
+  const orig = parseFloat(document.getElementById('origPrice').value);
+  if (!orig || isNaN(orig)) { document.getElementById('priceSuggest').style.display = 'none'; return; }
+  const suggested = Math.round(orig * 0.4);
+  document.getElementById('suggestedVal').textContent = 'PKR ' + suggested + ' (60% off)';
+  document.getElementById('priceSuggest').style.display = 'flex';
+
+  const list = document.getElementById('listPrice').value;
+  if (list) {
+    const disc = Math.round((1 - list / orig) * 100);
+    document.getElementById('discountDisplay').value = disc + '% off';
+  }
+}
+
+function applyPrice() {
+  const orig = parseFloat(document.getElementById('origPrice').value);
+  if (!orig) return;
+  const suggested = Math.round(orig * 0.4);
+  document.getElementById('listPrice').value = suggested;
+  document.getElementById('discountDisplay').value = '60% off';
+}
+
+document.getElementById('listPrice') && document.getElementById('listPrice').addEventListener('input', function() {
+  const orig = parseFloat(document.getElementById('origPrice').value);
+  const list = parseFloat(this.value);
+  if (orig && list) {
+    const disc = Math.round((1 - list / orig) * 100);
+    document.getElementById('discountDisplay').value = disc > 0 ? disc + '% off' : '';
+  }
+});
+
+// ── PHOTO PREVIEW ──
+function previewPhoto(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('previewImg').src = e.target.result;
+      document.getElementById('photoPreview').style.display = 'block';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// ── ACTIONS ──
+function publishListing() {
+  const name = document.getElementById('mealName').value;
+  if (!name.trim()) { showToast('⚠️ Please enter a meal name'); return; }
+  showToast('🚀 Listing published! Customers can now see it.');
+  resetForm();
+  switchView('listings', document.querySelectorAll('.nav-item')[2]);
+}
+
+function resetForm() {
+  document.getElementById('mealName').value = '';
+  document.getElementById('origPrice').value = '';
+  document.getElementById('listPrice').value = '';
+  document.getElementById('discountDisplay').value = '';
+  document.getElementById('qtyInput').value = '';
+  document.getElementById('priceSuggest').style.display = 'none';
+  document.getElementById('photoPreview').style.display = 'none';
+}
+
+function markCollected(btn) {
+  const row = btn.closest('tr');
+  row.style.opacity = '0.5';
+  showToast('✅ Marked as collected');
+}
+
+function removeListing(btn) {
+  if (!confirm('Remove this listing?')) return;
+  btn.closest('tr').remove();
+  showToast('🗑 Listing removed');
+}
+
+function collectOrder(btn) {
+  const row = btn.closest('tr');
+  row.cells[3].innerHTML = '<span class="pill pill-active">Collected ✓</span>';
+  btn.textContent = 'Done';
+  btn.disabled = true;
+  btn.classList.remove('btn-success');
+  btn.classList.add('btn-ghost');
+  showToast('✅ Order confirmed as collected');
+}
+
+function submitMembership() {
+  showToast('📨 Application submitted! You\'ll hear back within 24 hours.');
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.display = 'none'; }, 3000);
+}
+
+// Set today's date default
+const today = new Date().toISOString().split('T')[0];
+const dp = document.getElementById('pickupDate');
+if (dp) dp.value = today;
+</script>
+</body>
+</html>

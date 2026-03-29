@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MealBridge — Rescue Good Food</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --surface: #1a1815;
+    --surface2: #242220;
+    --border: #2e2b28;
+    --terra: #e8652a;
+    --terra-dim: #b84d1a;
+    --green: #4a7c59;
+    --green-light: #6aad80;
+    --cream: #f5efe6;
+    --muted: #8a8076;
+    --text: #f0e8dc;
+    --text-sub: #b0a898;
+    --danger: #c94040;
+    --gold: #d4a843;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,14,12,0.92);
+    backdrop-filter: blur(16px);
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topbar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    display:flex;
+    align-items: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--terra);
+    letter-spacing: -0.5px;
+  }
+
+  .logo span { color: var(--cream); }
+  
+  .logo-img {
+  width: 50px;
+  height: auto;
+  display: block;
+}
+
+  .notif-btn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    position: relative;
+    color: var(--text);
+    font-size: 16px;
+  }
+
+  .notif-dot {
+    position: absolute;
+    top: 7px; right: 7px;
+    width: 8px; height: 8px;
+    background: var(--terra);
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+  }
+
+  .location-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    color: var(--text-sub);
+    font-size: 13px;
+  }
+
+  .location-row svg { color: var(--terra); flex-shrink: 0; }
+
+  .location-row strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* ── SEARCH ── */
+  .search-wrap {
+    padding: 14px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+  }
+
+  .search-box input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    flex: 1;
+  }
+
+  .search-box input::placeholder { color: var(--muted); }
+
+  /* ── FILTER CHIPS ── */
+  .chips-wrap {
+    display: flex;
+    gap: 8px;
+    padding: 14px 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .chips-wrap::-webkit-scrollbar { display: none; }
+
+  .chip {
+    flex-shrink: 0;
+    padding: 7px 14px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-sub);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .chip.active {
+    background: var(--terra);
+    color: white;
+    border-color: var(--terra);
+  }
+
+  /* ── URGENCY BANNER ── */
+  .urgency-banner {
+    margin: 0 20px 4px;
+    background: linear-gradient(135deg, #2a1a0f, #3d1f08);
+    border: 1px solid #5a2e0a;
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .urgency-icon { font-size: 20px; }
+
+  .urgency-text { font-size: 13px; color: #f0a060; font-weight: 500; }
+
+  .urgency-text span { font-weight: 700; color: #ffb070; }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px 10px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--cream);
+  }
+
+  .see-all {
+    font-size: 13px;
+    color: var(--terra);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* ── MEAL CARD ── */
+  .cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 20px;
+  }
+
+  .meal-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .meal-card:hover {
+    transform: translateY(-2px);
+    border-color: #3e3a36;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .meal-card:nth-child(1) { animation-delay: 0.05s; }
+  .meal-card:nth-child(2) { animation-delay: 0.1s; }
+  .meal-card:nth-child(3) { animation-delay: 0.15s; }
+  .meal-card:nth-child(4) { animation-delay: 0.2s; }
+
+  .card-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    position: relative;
+  }
+
+  .card-badge {
+    position: absolute;
+    top: 10px; left: 10px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .badge-closing { background: var(--danger); color: white; }
+  .badge-fresh { background: var(--green); color: white; }
+  .badge-popular { background: var(--gold); color: #1a1000; }
+
+  .card-timer {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 12px;
+    color: #ffa060;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .card-body {
+    padding: 14px;
+  }
+
+  .card-restaurant {
+    font-size: 11px;
+    color: var(--terra);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .verified-star {
+    color: var(--gold);
+    font-size: 10px;
+  }
+
+  .card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-bottom: 12px;
+  }
+
+  .card-meta span { display: flex; align-items: center; gap: 4px; }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .price-block {}
+
+  .original-price {
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+
+  .sale-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--green-light);
+  }
+
+  .sale-price span {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-sub);
+  }
+
+  .discount-pill {
+    font-size: 11px;
+    color: var(--green-light);
+    background: rgba(74,124,89,0.2);
+    border: 1px solid rgba(74,124,89,0.4);
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-weight: 600;
+    margin-top: 2px;
+    display: inline-block;
+  }
+
+  .reserve-btn {
+    background: var(--terra);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.3px;
+  }
+
+  .reserve-btn:hover { background: #d05820; }
+  .reserve-btn:active { transform: scale(0.97); }
+
+  /* ── PICKUP INFO ROW ── */
+  .pickup-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(74,124,89,0.12);
+    border-top: 1px solid rgba(74,124,89,0.2);
+    padding: 8px 14px;
+    font-size: 12px;
+    color: var(--green-light);
+    font-weight: 500;
+  }
+
+  /* ── QUANTITY TAG ── */
+  .qty-tag {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 3px 10px;
+    font-size: 12px;
+    color: var(--text-sub);
+  }
+
+  /* ── NAV BAR ── */
+  .nav-bar {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    background: rgba(15,14,12,0.96);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 18px;
+    z-index: 100;
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 4px 20px;
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+
+  .nav-icon { font-size: 20px; filter: grayscale(1) opacity(0.5); transition: all 0.2s; }
+  .nav-label { font-size: 10px; color: var(--muted); font-weight: 500; transition: all 0.2s; }
+
+  .nav-item.active .nav-icon { filter: none; }
+  .nav-item.active .nav-label { color: var(--terra); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px 24px 0 0;
+    width: 100%;
+    max-width: 430px;
+    max-height: 88vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal-handle {
+    width: 40px; height: 4px;
+    background: var(--border);
+    border-radius: 100px;
+    margin: 12px auto 0;
+  }
+
+  .modal-img {
+    width: 100%;
+    height: 220px;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+    margin-top: 16px;
+  }
+
+  .modal-content { padding: 20px; }
+
+  .modal-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--terra);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--cream);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .modal-desc {
+    font-size: 14px;
+    color: var(--text-sub);
+    line-height: 1.6;
+    margin-bottom: 18px;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .detail-cell {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+  }
+
+  .detail-cell .label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .detail-cell .value {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-nav {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .btn-reserve-full {
+    flex: 2;
+    background: var(--terra);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+
+  .btn-reserve-full:hover { background: var(--terra-dim); }
+
+  .close-modal {
+    position: absolute;
+    top: 60px; right: 20px;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--muted);
+    z-index: 10;
+  }
+
+  .spacer { height: 90px; }
+
+  /* ── ORDERS VIEW ── */
+  .page { display: none; padding: 20px; }
+  .page.active { display: block; }
+
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--cream);
+    margin-bottom: 18px;
+  }
+
+  .order-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    animation: fadeUp 0.3s ease both;
+  }
+
+  .order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .order-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--cream);
+  }
+
+  .order-status {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .status-ready { background: rgba(74,124,89,0.2); color: var(--green-light); border: 1px solid rgba(74,124,89,0.4); }
+  .status-pending { background: rgba(212,168,67,0.2); color: var(--gold); border: 1px solid rgba(212,168,67,0.4); }
+  .status-done { background: rgba(138,128,118,0.2); color: var(--muted); border: 1px solid var(--border); }
+
+  .order-meta {
+    font-size: 13px;
+    color: var(--text-sub);
+    display: flex;
+    gap: 12px;
+  }
+
+  /* PROFILE */
+  .profile-section {
+    text-align: center;
+    padding: 24px 20px 16px;
+  }
+
+  .profile-avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--terra), var(--green));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 14px;
+    border: 3px solid var(--border);
+  }
+
+  .profile-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--cream);
+  }
+
+  .profile-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin: 18px 20px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 10px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--terra);
+    display: block;
+  }
+
+  .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .settings-list {
+    margin: 0 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .settings-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .settings-item:last-child { border-bottom: none; }
+  .settings-item:hover { background: var(--surface2); }
+
+  .settings-left { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+  .settings-icon { font-size: 18px; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar" id="topbarEl">
+  <div class="topbar-row">
+    <div class="logo">
+    <img class="logo-img" src="Symbol1.png">
+    Meal<span>Bridge</span>
+    </div>
+    <div class="notif-btn" onclick="alert('Notifications coming soon')">
+      🔔
+      <div class="notif-dot"></div>
+    </div>
+  </div>
+  <div class="location-row">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+    Pickup near <strong>Gulshan-e-Iqbal, Karachi</strong>
+  </div>
+</div>
+
+<!-- HOME PAGE -->
+<div id="page-home" class="page active">
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <div class="search-box">
+      <span style="color:var(--muted); font-size:16px">🔍</span>
+      <input type="text" placeholder="Search meals, restaurants..." oninput="filterCards(this.value)">
+      <span style="color:var(--muted); font-size:16px; cursor:pointer">⚙️</span>
+    </div>
+  </div>
+
+  <!-- Filter Chips -->
+  <div class="chips-wrap">
+    <div class="chip active" onclick="setChip(this,'all')">All</div>
+    <div class="chip" onclick="setChip(this,'biryani')">🍛 Biryani</div>
+    <div class="chip" onclick="setChip(this,'bakery')">🥐 Bakery</div>
+    <div class="chip" onclick="setChip(this,'pizza')">🍕 Pizza</div>
+    <div class="chip" onclick="setChip(this,'desi')">🫕 Desi</div>
+    <div class="chip" onclick="setChip(this,'drinks')">🧃 Drinks</div>
+    <div class="chip" onclick="setChip(this,'dessert')">🍮 Dessert</div>
+  </div>
+
+  <!-- Urgency Banner -->
+  <div class="urgency-banner">
+    <div class="urgency-icon">⏳</div>
+    <div class="urgency-text"><span>14 meals</span> closing in under 1 hour — grab before they're gone</div>
+  </div>
+
+  <!-- Meal Cards -->
+  <div class="section-header">
+    <div class="section-title">Available Now</div>
+    <div class="see-all">See all →</div>
+  </div>
+
+  <div class="cards-list" id="cardsList">
+
+    <div class="meal-card" onclick="openModal('Biryani Surprise Box','Al-Rehman Kitchen','🍛','PKR 180','PKR 450','Tonight 8–9:30 PM','3 left','A generous portion of slow-cooked Sindhi biryani with raita and achaar. Prepared fresh, freshness-policy pickup only.','closing','2.1 km')">
+      <div class="card-img">🍛
+        <div class="card-badge badge-closing">Closing Soon</div>
+        <div class="card-timer">⏱ 47 min</div>
+      </div>
+      <div class="card-body">
+        <div class="card-restaurant">Al-Rehman Kitchen <span class="verified-star">★</span></div>
+        <div class="card-name">Biryani Surprise Box</div>
+        <div class="card-meta">
+          <span>📍 2.1 km</span>
+          <span>⭐ 4.8</span>
+          <div class="qty-tag">3 left</div>
+        </div>
+        <div class="card-footer">
+          <div class="price-block">
+            <div class="original-price">PKR 450</div>
+            <div class="sale-price">PKR 180 <span>/ box</span></div>
+            <div class="discount-pill">60% off</div>
+          </div>
+          <button class="reserve-btn" onclick="event.stopPropagation(); openModal('Biryani Surprise Box','Al-Rehman Kitchen','🍛','PKR 180','PKR 450','Tonight 8–9:30 PM','3 left','A generous portion of slow-cooked Sindhi biryani with raita and achaar.','closing','2.1 km')">Reserve</button>
+        </div>
+      </div>
+      <div class="pickup-row">📦 Pickup: Tonight 8:00 – 9:30 PM</div>
+    </div>
+
+    <div class="meal-card" onclick="openModal('Assorted Pastry Pack','Bread & Butter Bakery','🥐','PKR 250','PKR 700','Today 7–9 PM','6 left','6 mixed pastries — croissants, danish, and muffins from today\'s bake. Perfectly good, end-of-day freshness policy only.','popular','0.8 km')">
+      <div class="card-img">🥐
+        <div class="card-badge badge-popular">Popular</div>
+        <div class="card-timer">⏱ 2h 10m</div>
+      </div>
+      <div class="card-body">
+        <div class="card-restaurant">Bread & Butter Bakery <span class="verified-star">★</span></div>
+        <div class="card-name">Assorted Pastry Pack (×6)</div>
+        <div class="card-meta">
+          <span>📍 0.8 km</span>
+          <span>⭐ 4.6</span>
+          <div class="qty-tag">6 left</div>
+        </div>
+        <div class="card-footer">
+          <div class="price-block">
+            <div class="original-price">PKR 700</div>
+            <div class="sale-price">PKR 250 <span>/ pack</span></div>
+            <div class="discount-pill">64% off</div>
+          </div>
+          <button class="reserve-btn" onclick="event.stopPropagation()">Reserve</button>
+        </div>
+      </div>
+      <div class="pickup-row">📦 Pickup: Today 7:00 – 9:00 PM</div>
+    </div>
+
+    <div class="meal-card" onclick="openModal('Margherita + Garlic Bread','Pizza Point DHA','🍕','PKR 350','PKR 900','Tonight 9–10 PM','2 left','Full 12-inch margherita with garlic bread. Store closing special — tastes exactly the same!','fresh','3.4 km')">
+      <div class="card-img" style="background:#1a1410">🍕
+        <div class="card-badge badge-fresh">Fresh Pick</div>
+        <div class="card-timer">⏱ 3h 20m</div>
+      </div>
+      <div class="card-body">
+        <div class="card-restaurant">Pizza Point DHA</div>
+        <div class="card-name">Margherita + Garlic Bread</div>
+        <div class="card-meta">
+          <span>📍 3.4 km</span>
+          <span>⭐ 4.3</span>
+          <div class="qty-tag">2 left</div>
+        </div>
+        <div class="card-footer">
+          <div class="price-block">
+            <div class="original-price">PKR 900</div>
+            <div class="sale-price">PKR 350 <span>/ set</span></div>
+            <div class="discount-pill">61% off</div>
+          </div>
+          <button class="reserve-btn" onclick="event.stopPropagation()">Reserve</button>
+        </div>
+      </div>
+      <div class="pickup-row">📦 Pickup: Tonight 9:00 – 10:00 PM</div>
+    </div>
+
+    <div class="meal-card" onclick="openModal('Daal Makhani Combo','Desi Dhaba','🫕','PKR 120','PKR 300','Today 7:30–8:30 PM','5 left','Daal makhani, 2 roti, and sabzi. Homestyle Lahori cook — no wastage policy.','fresh','1.2 km')">
+      <div class="card-img">🫕
+        <div class="card-badge badge-fresh">Fresh Pick</div>
+        <div class="card-timer">⏱ 1h 55m</div>
+      </div>
+      <div class="card-body">
+        <div class="card-restaurant">Desi Dhaba <span class="verified-star">★</span></div>
+        <div class="card-name">Daal Makhani Combo</div>
+        <div class="card-meta">
+          <span>📍 1.2 km</span>
+          <span>⭐ 4.9</span>
+          <div class="qty-tag">5 left</div>
+        </div>
+        <div class="card-footer">
+          <div class="price-block">
+            <div class="original-price">PKR 300</div>
+            <div class="sale-price">PKR 120 <span>/ plate</span></div>
+            <div class="discount-pill">60% off</div>
+          </div>
+          <button class="reserve-btn" onclick="event.stopPropagation()">Reserve</button>
+        </div>
+      </div>
+      <div class="pickup-row">📦 Pickup: Today 7:30 – 8:30 PM</div>
+    </div>
+
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<!-- ORDERS PAGE -->
+<div id="page-orders" class="page">
+  <div style="padding:20px">
+    <div class="page-title">My Reservations</div>
+
+    <div class="order-card">
+      <div class="order-header">
+        <div>
+          <div class="order-name">Biryani Surprise Box</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px">Al-Rehman Kitchen</div>
+        </div>
+        <div class="order-status status-ready">Ready!</div>
+      </div>
+      <div class="order-meta">
+        <span>🕗 8:00–9:30 PM</span>
+        <span>💰 PKR 180</span>
+        <span>📍 2.1 km</span>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button style="flex:1;padding:10px;background:var(--green);color:white;border:none;border-radius:8px;font-family:inherit;font-weight:600;cursor:pointer">Get Directions</button>
+        <button style="flex:1;padding:10px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-family:inherit;font-weight:600;cursor:pointer">View Code</button>
+      </div>
+    </div>
+
+    <div class="order-card">
+      <div class="order-header">
+        <div>
+          <div class="order-name">Assorted Pastry Pack</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px">Bread & Butter Bakery</div>
+        </div>
+        <div class="order-status status-pending">Pending</div>
+      </div>
+      <div class="order-meta">
+        <span>🕗 7:00–9:00 PM</span>
+        <span>💰 PKR 250</span>
+      </div>
+    </div>
+
+    <div class="order-card">
+      <div class="order-header">
+        <div>
+          <div class="order-name">Daal Makhani Combo</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px">Desi Dhaba</div>
+        </div>
+        <div class="order-status status-done">Collected</div>
+      </div>
+      <div class="order-meta">
+        <span>Yesterday</span>
+        <span>💰 PKR 120</span>
+        <span>⭐ You rated 5★</span>
+      </div>
+    </div>
+
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- PROFILE PAGE -->
+<div id="page-profile" class="page">
+  <div class="profile-section">
+    <div class="profile-avatar">🧑</div>
+    <div class="profile-name">Farhan Ahmed</div>
+    <div style="font-size:13px;color:var(--muted);margin-top:4px">Member since Jan 2025</div>
+  </div>
+
+  <div class="profile-stats">
+    <div class="stat-card">
+      <span class="stat-num">23</span>
+      <div class="stat-label">Meals Saved</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" style="color:var(--green-light)">4.2<span style="font-size:14px">kg</span></span>
+      <div class="stat-label">Food Rescued</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" style="color:var(--gold)">5.8k</span>
+      <div class="stat-label">PKR Saved</div>
+    </div>
+  </div>
+
+  <div class="settings-list">
+    <div class="settings-item">
+      <div class="settings-left"><span class="settings-icon">🔔</span> Notifications</div>
+      <span style="color:var(--muted)">›</span>
+    </div>
+    <div class="settings-item">
+      <div class="settings-left"><span class="settings-icon">💳</span> Payment Methods</div>
+      <span style="color:var(--muted)">›</span>
+    </div>
+    <div class="settings-item">
+      <div class="settings-left"><span class="settings-icon">📍</span> Saved Addresses</div>
+      <span style="color:var(--muted)">›</span>
+    </div>
+    <div class="settings-item">
+      <div class="settings-left"><span class="settings-icon">🌐</span> Language</div>
+      <span style="color:var(--muted)">›</span>
+    </div>
+    <div class="settings-item">
+      <div class="settings-left"><span class="settings-icon">🛡️</span> Privacy & Safety</div>
+      <span style="color:var(--muted)">›</span>
+    </div>
+    <div class="settings-item" onclick="alert('Logged out')">
+      <div class="settings-left" style="color:var(--danger)"><span class="settings-icon">🚪</span> Log Out</div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="nav-bar">
+  <div class="nav-item active" onclick="switchPage('home',this)">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">Browse</span>
+  </div>
+  <div class="nav-item" onclick="switchPage('orders',this)">
+    <span class="nav-icon">📋</span>
+    <span class="nav-label">Orders</span>
+  </div>
+  <div class="nav-item" onclick="switchPage('map',this)">
+    <span class="nav-icon">🗺️</span>
+    <span class="nav-label">Map</span>
+  </div>
+  <div class="nav-item" onclick="switchPage('profile',this)">
+    <span class="nav-icon">👤</span>
+    <span class="nav-label">Profile</span>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="mealModal" onclick="closeModal(event)">
+  <div class="modal" id="modalContent">
+    <div class="modal-handle"></div>
+    <div class="modal-img" id="modalEmoji">🍛</div>
+    <div class="modal-content">
+      <div class="modal-tag" id="modalRest">Restaurant</div>
+      <div class="modal-title" id="modalTitle">Meal Name</div>
+      <div class="modal-desc" id="modalDesc">Description</div>
+      <div class="detail-grid">
+        <div class="detail-cell">
+          <div class="label">Price</div>
+          <div class="value" id="modalPrice" style="color:var(--green-light)">PKR 0</div>
+        </div>
+        <div class="detail-cell">
+          <div class="label">Original</div>
+          <div class="value" id="modalOrig" style="text-decoration:line-through;color:var(--muted)">PKR 0</div>
+        </div>
+        <div class="detail-cell">
+          <div class="label">Pickup Window</div>
+          <div class="value" id="modalPickup" style="font-size:12px">—</div>
+        </div>
+        <div class="detail-cell">
+          <div class="label">Remaining</div>
+          <div class="value" id="modalQty">—</div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-nav" onclick="alert('Opening maps...')">🗺️ Navigate</button>
+        <button class="btn-reserve-full" onclick="confirmReserve()">Reserve Now →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const pg = document.getElementById('page-' + name);
+  if (pg) {
+    pg.classList.add('active');
+  } else {
+    // Map page placeholder
+    document.getElementById('page-home').classList.add('active');
+    alert('Interactive map coming soon! Will show nearby restaurants with pickup pins.');
+  }
+  el.classList.add('active');
+}
+
+function setChip(el, filter) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function openModal(name, rest, emoji, price, orig, pickup, qty, desc, badge, dist) {
+  document.getElementById('modalTitle').textContent = name;
+  document.getElementById('modalRest').textContent = rest + ' · ' + dist;
+  document.getElementById('modalEmoji').textContent = emoji;
+  document.getElementById('modalPrice').textContent = price;
+  document.getElementById('modalOrig').textContent = orig;
+  document.getElementById('modalPickup').textContent = pickup;
+  document.getElementById('modalQty').textContent = qty;
+  document.getElementById('modalDesc').textContent = desc;
+  document.getElementById('mealModal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('mealModal')) {
+    document.getElementById('mealModal').classList.remove('open');
+  }
+}
+
+function confirmReserve() {
+  document.getElementById('mealModal').classList.remove('open');
+  // Show success toast
+  const toast = document.createElement('div');
+  toast.style.cssText = `position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#4a7c59;color:white;padding:12px 22px;border-radius:100px;font-size:14px;font-weight:600;z-index:999;animation:fadeUp 0.3s ease;white-space:nowrap;`;
+  toast.textContent = '✅ Reserved! Check your orders.';
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2800);
+}
+
+function filterCards(val) {
+  // Placeholder for real filter logic
+}
+</script>
+</body>
+</html>

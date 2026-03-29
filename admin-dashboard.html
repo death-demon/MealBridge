@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodSave — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --surface3: #30363d;
+    --border: #30363d;
+    --border2: #21262d;
+    --text: #e6edf3;
+    --text-sub: #8b949e;
+    --text-muted: #484f58;
+    --accent: #f78166;
+    --accent2: #3fb950;
+    --accent3: #58a6ff;
+    --accent4: #d29922;
+    --accent5: #bc8cff;
+    --danger: #f85149;
+    --danger-bg: rgba(248,81,73,0.1);
+    --warn: #e3b341;
+    --warn-bg: rgba(227,179,65,0.1);
+    --info: #388bfd;
+    --info-bg: rgba(56,139,253,0.12);
+    --success: #3fb950;
+    --success-bg: rgba(63,185,80,0.1);
+    --radius: 8px;
+    --radius-sm: 6px;
+    --font: 'Space Grotesk', sans-serif;
+    --mono: 'Fira Code', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 13.5px;
+  }
+
+  /* ── LAYOUT ── */
+  .root { display: flex; min-height: 100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 220px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    flex-shrink: 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-top {
+    padding: 16px 14px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-badge {
+    font-size: 10px;
+    font-weight: 600;
+    background: var(--danger);
+    color: white;
+    padding: 2px 7px;
+    border-radius: 100px;
+    letter-spacing: 0.3px;
+  }
+
+  .admin-ident {
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--text-sub);
+  }
+
+  .admin-ident strong { color: var(--text); }
+
+  .nav-group { padding: 10px 8px; border-bottom: 1px solid var(--border2); }
+
+  .nav-group-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 6px 6px;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-sub);
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .nav-link:hover { background: var(--surface2); color: var(--text); }
+  .nav-link.active { background: rgba(56,139,253,0.12); color: var(--accent3); }
+
+  .nav-link .nav-count {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 100px;
+  }
+
+  .count-danger { background: var(--danger-bg); color: var(--danger); }
+  .count-warn { background: var(--warn-bg); color: var(--warn); }
+  .count-info { background: var(--info-bg); color: var(--info); }
+
+  /* ── MAIN ── */
+  .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 14px; }
+
+  .page-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .breadcrumb {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .header-right { display: flex; align-items: center; gap: 10px; }
+
+  .header-btn {
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text-sub);
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .header-btn:hover { background: var(--surface3); color: var(--text); }
+
+  .live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--success);
+    font-weight: 600;
+    padding: 5px 10px;
+    background: var(--success-bg);
+    border: 1px solid rgba(63,185,80,0.2);
+    border-radius: 100px;
+  }
+
+  .live-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── CONTENT ── */
+  .content { flex: 1; overflow-y: auto; padding: 22px 24px; }
+
+  /* ── METRIC CARDS ── */
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .metric-card.blue::before { background: var(--accent3); }
+  .metric-card.green::before { background: var(--accent2); }
+  .metric-card.red::before { background: var(--danger); }
+  .metric-card.orange::before { background: var(--accent); }
+  .metric-card.yellow::before { background: var(--accent4); }
+  .metric-card.purple::before { background: var(--accent5); }
+
+  .m-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .m-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .m-sub {
+    font-size: 11px;
+    color: var(--text-sub);
+    margin-top: 3px;
+  }
+
+  .m-delta {
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .m-delta.up { color: var(--success); }
+  .m-delta.down { color: var(--danger); }
+
+  /* ── PANELS ── */
+  .panels-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .panel-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-action {
+    font-size: 11px;
+    color: var(--accent3);
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  /* ── TABLE ── */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th {
+    padding: 8px 14px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border2);
+    font-size: 13px;
+  }
+
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── BADGES / PILLS ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  .badge-pending { background: var(--warn-bg); color: var(--warn); border: 1px solid rgba(227,179,65,0.3); }
+  .badge-approved { background: var(--success-bg); color: var(--success); border: 1px solid rgba(63,185,80,0.3); }
+  .badge-rejected { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(248,81,73,0.3); }
+  .badge-active { background: var(--info-bg); color: var(--info); border: 1px solid rgba(56,139,253,0.2); }
+  .badge-resolved { background: rgba(139,148,158,0.1); color: var(--text-sub); border: 1px solid var(--border); }
+  .badge-open { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(248,81,73,0.3); }
+  .badge-investigating { background: var(--warn-bg); color: var(--warn); border: 1px solid rgba(227,179,65,0.3); }
+
+  /* ── ICON BUTTONS ── */
+  .act-btn {
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text-sub);
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .act-btn:hover { background: var(--surface3); color: var(--text); }
+  .act-btn.approve { border-color: rgba(63,185,80,0.4); color: var(--success); }
+  .act-btn.approve:hover { background: var(--success-bg); }
+  .act-btn.reject { border-color: rgba(248,81,73,0.4); color: var(--danger); }
+  .act-btn.reject:hover { background: var(--danger-bg); }
+  .act-btn.warn-btn { border-color: rgba(227,179,65,0.4); color: var(--warn); }
+  .act-btn.warn-btn:hover { background: var(--warn-bg); }
+
+  .act-row { display: flex; gap: 5px; }
+
+  /* ── VIEWS ── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ── MONO TEXT ── */
+  .mono { font-family: var(--mono); font-size: 12px; }
+
+  /* ── ALERT BANNER ── */
+  .alert-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--danger-bg);
+    border: 1px solid rgba(248,81,73,0.3);
+    border-radius: var(--radius);
+    padding: 13px 16px;
+    margin-bottom: 16px;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .alert-banner.warn {
+    background: var(--warn-bg);
+    border-color: rgba(227,179,65,0.3);
+  }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+
+  .alert-icon { font-size: 18px; flex-shrink: 0; }
+  .alert-body { flex: 1; }
+  .alert-title { font-weight: 700; font-size: 13px; color: var(--text); margin-bottom: 3px; }
+  .alert-sub { font-size: 12px; color: var(--text-sub); }
+  .alert-dismiss { font-size: 16px; color: var(--text-muted); cursor: pointer; flex-shrink: 0; }
+
+  /* ── APPROVAL CARD ── */
+  .approval-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+
+  .approval-head {
+    padding: 13px 16px;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .approval-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .approval-body {
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+
+  .info-field { }
+  .info-field .key { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 3px; }
+  .info-field .val { font-size: 13px; color: var(--text); font-weight: 500; }
+
+  .approval-foot {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ── STATS CHART PLACEHOLDER ── */
+  .chart-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+
+  .chart-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .chart-title { font-size: 13px; font-weight: 700; }
+
+  .chart-legend {
+    display: flex;
+    gap: 14px;
+    font-size: 11px;
+    color: var(--text-sub);
+  }
+
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    display: inline-block;
+    margin-right: 4px;
+  }
+
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 100px;
+  }
+
+  .bar-group { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+
+  .bar {
+    border-radius: 3px 3px 0 0;
+    width: 100%;
+    transition: opacity 0.2s;
+  }
+
+  .bar:hover { opacity: 0.8; }
+
+  .bar-label { font-size: 10px; color: var(--text-muted); }
+
+  /* ── SEARCH ── */
+  .search-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .search-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    font-family: var(--font);
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+  }
+
+  .search-input:focus { border-color: var(--accent3); }
+  .search-input::placeholder { color: var(--text-muted); }
+
+  .filter-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-family: var(--font);
+    font-size: 12px;
+    color: var(--text-sub);
+    outline: none;
+    cursor: pointer;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 20px; right: 20px;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 11px 18px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    z-index: 9999;
+    display: none;
+    animation: slideIn 0.25s ease;
+  }
+
+  @keyframes slideIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1200px) { .metrics-row { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 900px) { .panels-row { grid-template-columns: 1fr; } .sidebar { width: 190px; } }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+  }
+
+  .empty-state .icon { font-size: 36px; margin-bottom: 10px; }
+  .empty-state .msg { font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div class="root">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="logo">
+        🌿 FoodSave
+        <span class="logo-badge">ADMIN</span>
+      </div>
+      <div class="admin-ident">Signed in as <strong>Ops Team</strong></div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Overview</div>
+      <div class="nav-link active" onclick="switchView('overview', this)">
+        📊 Overview
+      </div>
+      <div class="nav-link" onclick="switchView('live', this)">
+        📡 Live Activity
+        <span class="nav-count count-info">12</span>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Operations</div>
+      <div class="nav-link" onclick="switchView('approvals', this)">
+        🏪 Restaurant Approvals
+        <span class="nav-count count-warn">5</span>
+      </div>
+      <div class="nav-link" onclick="switchView('listings-monitor', this)">
+        📋 Monitor Listings
+      </div>
+      <div class="nav-link" onclick="switchView('orders', this)">
+        📦 Orders & Pickups
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Safety</div>
+      <div class="nav-link" onclick="switchView('complaints', this)">
+        ⚠️ Complaints
+        <span class="nav-count count-danger">3</span>
+      </div>
+      <div class="nav-link" onclick="switchView('cancel', this)">
+        🚫 Cancel / Flag Orders
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Finance</div>
+      <div class="nav-link" onclick="switchView('payouts', this)">
+        💸 Manage Payouts
+      </div>
+    </div>
+
+    <div class="nav-group" style="border-bottom:none">
+      <div class="nav-group-label">System</div>
+      <div class="nav-link" onclick="switchView('users', this)">
+        👥 User Management
+      </div>
+      <div class="nav-link" onclick="switchView('settings', this)">
+        ⚙️ Settings
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-area">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="header-left">
+        <div class="page-name" id="pageName">Overview</div>
+        <div class="breadcrumb">Admin / <span id="breadSub">Dashboard</span></div>
+      </div>
+      <div class="header-right">
+        <div class="live-indicator">
+          <div class="live-dot"></div>
+          System Live
+        </div>
+        <button class="header-btn" onclick="alert('Generating PDF report...')">⬇ Export Report</button>
+        <button class="header-btn" onclick="alert('Sending alert to all restaurants...')">📢 Broadcast</button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- ── OVERVIEW ── -->
+      <div class="view active" id="view-overview">
+
+        <div class="alert-banner">
+          <span class="alert-icon">🚨</span>
+          <div class="alert-body">
+            <div class="alert-title">3 unresolved safety complaints require your attention</div>
+            <div class="alert-sub">2 food quality reports, 1 no-show complaint — review in Complaints section</div>
+          </div>
+          <span class="alert-dismiss" onclick="this.closest('.alert-banner').remove()">×</span>
+        </div>
+
+        <div class="alert-banner warn">
+          <span class="alert-icon">⏳</span>
+          <div class="alert-body">
+            <div class="alert-title">5 restaurant membership applications pending review</div>
+            <div class="alert-sub">Applications submitted more than 12 hours ago — review now</div>
+          </div>
+          <span class="alert-dismiss" onclick="this.closest('.alert-banner').remove()">×</span>
+        </div>
+
+        <!-- METRICS -->
+        <div class="metrics-row">
+          <div class="metric-card blue">
+            <div class="m-label">Active Restaurants</div>
+            <div class="m-val">34</div>
+            <div class="m-sub"><span class="m-delta up">+3</span> this week</div>
+          </div>
+          <div class="metric-card green">
+            <div class="m-label">Today's Listings</div>
+            <div class="m-val">87</div>
+            <div class="m-sub"><span class="m-delta up">↑ 12%</span> vs yesterday</div>
+          </div>
+          <div class="metric-card orange">
+            <div class="m-label">Pickups Today</div>
+            <div class="m-val">61</div>
+            <div class="m-sub">of 87 active — 70%</div>
+          </div>
+          <div class="metric-card yellow">
+            <div class="m-label">Revenue (PKR)</div>
+            <div class="m-val">14.2k</div>
+            <div class="m-sub">30-day: PKR 312k</div>
+          </div>
+          <div class="metric-card red">
+            <div class="m-label">Open Complaints</div>
+            <div class="m-val" style="color:var(--danger)">3</div>
+            <div class="m-sub">1 escalated</div>
+          </div>
+          <div class="metric-card purple">
+            <div class="m-label">Food Rescued</div>
+            <div class="m-val">2.4<span style="font-size:14px">t</span></div>
+            <div class="m-sub">Lifetime total (kg)</div>
+          </div>
+        </div>
+
+        <!-- CHART -->
+        <div class="chart-area">
+          <div class="chart-head">
+            <div class="chart-title">📈 Pickup Success Rate — Last 7 Days</div>
+            <div class="chart-legend">
+              <span><span class="legend-dot" style="background:var(--accent2)"></span>Pickups</span>
+              <span><span class="legend-dot" style="background:var(--surface3)"></span>Listed</span>
+            </div>
+          </div>
+          <div class="bar-chart">
+            <div class="bar-group">
+              <div style="display:flex;gap:2px;align-items:flex-end;flex:1;width:100%">
+                <div class="bar" style="height:65px;background:var(--surface3);flex:1"></div>
+                <div class="bar" style="height:52px;background:var(--accent2);flex:1"></div>
+              </div>
+              <div class="bar-label">Mon</div>
+            </div>
+            <div class="bar-group">
+              <div style="display:flex;gap:2px;align-items:flex-end;flex:1;width:100%">
+                <div class="bar" style="height:80px;background:var(--surface3);flex:1"></div>
+                <div class="bar" style="height:68px;background:var(--accent2);flex:1"></div>
+              </div>
+              <div class="bar-label">Tue</div>
+            </div>
+            <div class="bar-group">
+              <div style="display:flex;gap:2px;align-items:flex-end;flex:1;width:100%">
+                <div class="bar" style="height:70px;background:var(--surface3);flex:1"></div>
+                <div class="bar" style="height:63px;background:var(--accent2);flex:1"></div>
+              </div>
+              <div class="bar-label">Wed</div>
+            </div>
+            <div class="bar-group">
+              <div style="display:flex;gap:2px;align-items:flex-end;flex:1;width:100%">
+                <div class="bar" style="height:90px;background:var(--surface3);flex:1"></div>
+                <div class="bar" style="height:79px;background:var(--accent2);flex:1"></div>
+              </div>
+              <div class="bar-label">Thu</div>
+            </div>
+            <div class="bar-group">
+              <div style="display:flex;gap:2px;align-items:flex-end;flex:1;width:100%">
+                <div class="bar" style="height:75px;background:var(--surface3);flex:1"></div>
+                <div class="bar" style="height:70px;background:var(--accent2);flex:1"></div>
+              </div>
+              <div class="bar-label">Fri</div>
+            </div>
+            <div class="bar-group">
+              <div style="display:flex;gap:2px;align-items:flex-end;flex:1;width:100%">
+                <div class="bar" style="height:95px;background:var(--surface3);flex:1"></div>
+                <div class="bar" style="height:88px;background:var(--accent2);flex:1"></div>
+              </div>
+              <div class="bar-label">Sat</div>
+            </div>
+            <div class="bar-group">
+              <div style="display:flex;gap:2px;align-items:flex-end;flex:1;width:100%">
+                <div class="bar" style="height:87px;background:var(--surface3);flex:1"></div>
+                <div class="bar" style="height:61px;background:var(--accent2);flex:1;opacity:0.6"></div>
+              </div>
+              <div class="bar-label">Today</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TWO PANELS -->
+        <div class="panels-row">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">🏪 Recent Restaurant Applications</div>
+              <div class="panel-action" onclick="switchView('approvals', document.querySelectorAll('.nav-link')[3])">View all →</div>
+            </div>
+            <table class="data-table">
+              <thead><tr><th>Restaurant</th><th>City</th><th>Applied</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight:600">Karachi Bakers Co.</td>
+                  <td style="color:var(--text-sub)">Karachi</td>
+                  <td style="color:var(--text-sub);font-size:11px">2h ago</td>
+                  <td><span class="badge badge-pending">Pending</span></td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600">Lahori Dhaba</td>
+                  <td style="color:var(--text-sub)">Lahore</td>
+                  <td style="color:var(--text-sub);font-size:11px">5h ago</td>
+                  <td><span class="badge badge-pending">Pending</span></td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600">Pizza Palace PECHS</td>
+                  <td style="color:var(--text-sub)">Karachi</td>
+                  <td style="color:var(--text-sub);font-size:11px">Yesterday</td>
+                  <td><span class="badge badge-approved">Approved</span></td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600">Desi Corner F-11</td>
+                  <td style="color:var(--text-sub)">Islamabad</td>
+                  <td style="color:var(--text-sub);font-size:11px">Yesterday</td>
+                  <td><span class="badge badge-rejected">Rejected</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">⚠️ Recent Complaints</div>
+              <div class="panel-action" onclick="switchView('complaints', document.querySelectorAll('.nav-link')[5])">View all →</div>
+            </div>
+            <table class="data-table">
+              <thead><tr><th>Issue</th><th>Restaurant</th><th>Severity</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight:600;color:var(--danger)">Food Quality 🚨</td>
+                  <td style="color:var(--text-sub);font-size:12px">Al-Rehman Kitchen</td>
+                  <td><span class="badge badge-open">High</span></td>
+                  <td><span class="badge badge-open">Open</span></td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600">Listing Mismatch</td>
+                  <td style="color:var(--text-sub);font-size:12px">Bread & Butter</td>
+                  <td><span class="badge badge-investigating">Med</span></td>
+                  <td><span class="badge badge-investigating">Investigating</span></td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600">Restaurant No-Show</td>
+                  <td style="color:var(--text-sub);font-size:12px">Pizza Point DHA</td>
+                  <td><span class="badge badge-investigating">Med</span></td>
+                  <td><span class="badge badge-investigating">Investigating</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── APPROVALS ── -->
+      <div class="view" id="view-approvals">
+        <div class="search-row">
+          <input class="search-input" placeholder="Search applications...">
+          <select class="filter-select"><option>All Applications</option><option>Pending</option><option>Approved</option><option>Rejected</option></select>
+        </div>
+
+        <div class="approval-card">
+          <div class="approval-head">
+            <div>
+              <div class="approval-name">Karachi Bakers Co.</div>
+              <div style="font-size:11px;color:var(--text-sub);margin-top:2px">Applied 2 hours ago</div>
+            </div>
+            <span class="badge badge-pending">Pending</span>
+          </div>
+          <div class="approval-body">
+            <div class="info-field"><div class="key">Owner</div><div class="val">Hamid Mirza</div></div>
+            <div class="info-field"><div class="key">CNIC</div><div class="val mono">42301-XXXXXXX-X</div></div>
+            <div class="info-field"><div class="key">Type</div><div class="val">Bakery / Café</div></div>
+            <div class="info-field"><div class="key">City</div><div class="val">Karachi, PECHS</div></div>
+            <div class="info-field"><div class="key">Phone</div><div class="val">0314-XXXXXXX</div></div>
+            <div class="info-field"><div class="key">License</div><div class="val mono">KHI-2023-7834</div></div>
+          </div>
+          <div class="approval-foot">
+            <button class="act-btn approve" onclick="handleApproval(this, 'approve')">✓ Approve</button>
+            <button class="act-btn reject" onclick="handleApproval(this, 'reject')">✕ Reject</button>
+            <button class="act-btn" onclick="alert('Requesting more info...')">📨 Request Info</button>
+            <span style="margin-left:auto;font-size:12px;color:var(--text-muted)">Review before approving — verify license</span>
+          </div>
+        </div>
+
+        <div class="approval-card">
+          <div class="approval-head">
+            <div>
+              <div class="approval-name">Lahori Dhaba</div>
+              <div style="font-size:11px;color:var(--text-sub);margin-top:2px">Applied 5 hours ago</div>
+            </div>
+            <span class="badge badge-pending">Pending</span>
+          </div>
+          <div class="approval-body">
+            <div class="info-field"><div class="key">Owner</div><div class="val">Asif Khan</div></div>
+            <div class="info-field"><div class="key">CNIC</div><div class="val mono">35202-XXXXXXX-X</div></div>
+            <div class="info-field"><div class="key">Type</div><div class="val">Desi Restaurant</div></div>
+            <div class="info-field"><div class="key">City</div><div class="val">Lahore, Gulberg</div></div>
+            <div class="info-field"><div class="key">Phone</div><div class="val">0321-XXXXXXX</div></div>
+            <div class="info-field"><div class="key">License</div><div class="val" style="color:var(--warn)">Not Provided ⚠</div></div>
+          </div>
+          <div class="approval-foot">
+            <button class="act-btn approve" onclick="handleApproval(this, 'approve')">✓ Approve</button>
+            <button class="act-btn reject" onclick="handleApproval(this, 'reject')">✕ Reject</button>
+            <button class="act-btn" onclick="alert('Requesting license document...')">📨 Request License</button>
+            <span style="margin-left:auto;font-size:12px;color:var(--warn)">⚠ No license — verify before approving</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── LISTINGS MONITOR ── -->
+      <div class="view" id="view-listings-monitor">
+        <div class="search-row">
+          <input class="search-input" placeholder="Search listings by meal name, restaurant...">
+          <select class="filter-select"><option>All Status</option><option>Active</option><option>Closing</option><option>Expired</option></select>
+          <select class="filter-select"><option>All Cities</option><option>Karachi</option><option>Lahore</option><option>Islamabad</option></select>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">📋 All Active Listings (87)</div>
+            <div style="display:flex;gap:8px">
+              <button class="act-btn" onclick="alert('Refreshing...')">↻ Refresh</button>
+            </div>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Meal</th><th>Restaurant</th><th>City</th><th>Qty Left</th><th>Price</th><th>Pickup Until</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600">Biryani Surprise Box</td>
+                <td style="color:var(--text-sub)">Al-Rehman Kitchen</td>
+                <td style="color:var(--text-muted)">Karachi</td>
+                <td>3 / 8</td>
+                <td class="mono">PKR 180</td>
+                <td style="color:var(--warn);font-size:12px">9:30 PM ⏳</td>
+                <td><span class="badge badge-investigating">Closing</span></td>
+                <td><div class="act-row"><button class="act-btn" onclick="alert('Viewing listing details')">👁 View</button><button class="act-btn reject" onclick="removeListing(this)">🚫 Remove</button></div></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600">Assorted Pastry Pack</td>
+                <td style="color:var(--text-sub)">Bread & Butter</td>
+                <td style="color:var(--text-muted)">Karachi</td>
+                <td>6 / 8</td>
+                <td class="mono">PKR 250</td>
+                <td style="color:var(--text-sub);font-size:12px">9:00 PM</td>
+                <td><span class="badge badge-active">Active</span></td>
+                <td><div class="act-row"><button class="act-btn">👁 View</button><button class="act-btn reject" onclick="removeListing(this)">🚫 Remove</button></div></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600">Margherita + Garlic Bread</td>
+                <td style="color:var(--text-sub)">Pizza Point DHA</td>
+                <td style="color:var(--text-muted)">Karachi</td>
+                <td>2 / 5</td>
+                <td class="mono">PKR 350</td>
+                <td style="color:var(--text-sub);font-size:12px">10:00 PM</td>
+                <td><span class="badge badge-active">Active</span></td>
+                <td><div class="act-row"><button class="act-btn">👁 View</button><button class="act-btn reject" onclick="removeListing(this)">🚫 Remove</button></div></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600">Daal Makhani Combo</td>
+                <td style="color:var(--text-sub)">Desi Dhaba</td>
+                <td style="color:var(--text-muted)">Karachi</td>
+                <td>5 / 5</td>
+                <td class="mono">PKR 120</td>
+                <td style="color:var(--text-sub);font-size:12px">8:30 PM</td>
+                <td><span class="badge badge-active">Active</span></td>
+                <td><div class="act-row"><button class="act-btn">👁 View</button><button class="act-btn reject" onclick="removeListing(this)">🚫 Remove</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── ORDERS ── -->
+      <div class="view" id="view-orders">
+        <div class="search-row">
+          <input class="search-input" placeholder="Search by order ID, customer, restaurant...">
+          <select class="filter-select"><option>All Orders</option><option>Awaiting Pickup</option><option>Collected</option><option>Cancelled</option></select>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">📦 Today's Orders (61 pickups / 87 reserved)</div>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Order ID</th><th>Meal</th><th>Restaurant</th><th>Customer</th><th>Amount</th><th>Pickup Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="mono" style="color:var(--accent3)">#FS-8821</td>
+                <td style="font-weight:600">Biryani Surprise Box</td>
+                <td style="color:var(--text-sub);font-size:12px">Al-Rehman Kitchen</td>
+                <td style="color:var(--text-sub);font-size:12px">Ahmed R.</td>
+                <td class="mono">PKR 180</td>
+                <td><span class="badge badge-investigating">Awaiting</span></td>
+                <td><div class="act-row"><button class="act-btn">👁</button><button class="act-btn reject" onclick="cancelOrder(this)">🚫 Cancel</button></div></td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--accent3)">#FS-8819</td>
+                <td style="font-weight:600">Biryani Surprise Box</td>
+                <td style="color:var(--text-sub);font-size:12px">Al-Rehman Kitchen</td>
+                <td style="color:var(--text-sub);font-size:12px">Sara K.</td>
+                <td class="mono">PKR 180</td>
+                <td><span class="badge badge-approved">Collected ✓</span></td>
+                <td><div class="act-row"><button class="act-btn">👁</button></div></td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--accent3)">#FS-8814</td>
+                <td style="font-weight:600">Pastry Pack ×6</td>
+                <td style="color:var(--text-sub);font-size:12px">Bread & Butter</td>
+                <td style="color:var(--text-sub);font-size:12px">Omar H.</td>
+                <td class="mono">PKR 250</td>
+                <td><span class="badge badge-investigating">Awaiting</span></td>
+                <td><div class="act-row"><button class="act-btn">👁</button><button class="act-btn reject" onclick="cancelOrder(this)">🚫 Cancel</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── COMPLAINTS ── -->
+      <div class="view" id="view-complaints">
+
+        <div class="alert-banner">
+          <span class="alert-icon">🚨</span>
+          <div class="alert-body">
+            <div class="alert-title">Food Quality complaint — Al-Rehman Kitchen — requires immediate review</div>
+            <div class="alert-sub">Customer reports received food that appeared spoiled. Restaurant's listing has been auto-paused pending review.</div>
+          </div>
+          <button class="act-btn reject" style="flex-shrink:0" onclick="this.closest('.alert-banner').remove();showToast('Listing suspended & restaurant notified')">🚫 Suspend Listing</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">⚠️ All Complaints</div>
+            <div class="panel-action">3 open, 1 escalated</div>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Complaint ID</th><th>Type</th><th>Customer</th><th>Restaurant</th><th>Reported</th><th>Severity</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="mono" style="color:var(--danger)">#CPL-003</td>
+                <td style="font-weight:600;color:var(--danger)">Food Quality 🚨</td>
+                <td style="color:var(--text-sub);font-size:12px">Fatima A.</td>
+                <td style="color:var(--text-sub);font-size:12px">Al-Rehman Kitchen</td>
+                <td style="font-size:11px;color:var(--text-muted)">1h ago</td>
+                <td><span class="badge badge-open">HIGH</span></td>
+                <td><span class="badge badge-open">Open</span></td>
+                <td><div class="act-row"><button class="act-btn" onclick="alert('Opening full complaint...')">👁 Details</button><button class="act-btn warn-btn" onclick="alert('Restaurant notified')">📨 Notify</button><button class="act-btn approve" onclick="resolveComplaint(this)">✓ Resolve</button></div></td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--warn)">#CPL-002</td>
+                <td style="font-weight:600">Listing Mismatch</td>
+                <td style="color:var(--text-sub);font-size:12px">Bilal S.</td>
+                <td style="color:var(--text-sub);font-size:12px">Bread & Butter</td>
+                <td style="font-size:11px;color:var(--text-muted)">4h ago</td>
+                <td><span class="badge badge-investigating">MED</span></td>
+                <td><span class="badge badge-investigating">Investigating</span></td>
+                <td><div class="act-row"><button class="act-btn">👁 Details</button><button class="act-btn approve" onclick="resolveComplaint(this)">✓ Resolve</button></div></td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--warn)">#CPL-001</td>
+                <td style="font-weight:600">Restaurant No-Show</td>
+                <td style="color:var(--text-sub);font-size:12px">Hina M.</td>
+                <td style="color:var(--text-sub);font-size:12px">Pizza Point DHA</td>
+                <td style="font-size:11px;color:var(--text-muted)">Yesterday</td>
+                <td><span class="badge badge-investigating">MED</span></td>
+                <td><span class="badge badge-investigating">Investigating</span></td>
+                <td><div class="act-row"><button class="act-btn">👁 Details</button><button class="act-btn approve" onclick="resolveComplaint(this)">✓ Resolve</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── CANCEL ORDERS ── -->
+      <div class="view" id="view-cancel">
+        <div class="alert-banner warn">
+          <span class="alert-icon">⚠️</span>
+          <div class="alert-body">
+            <div class="alert-title">Manual order cancellation — use with caution</div>
+            <div class="alert-sub">Cancelling orders after reservation affects restaurant and customer trust scores. Always log the reason.</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">🚫 Cancel or Flag Orders</div>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Order ID</th><th>Meal</th><th>Restaurant</th><th>Customer</th><th>Reason to Flag</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="mono" style="color:var(--accent3)">#FS-8821</td>
+                <td>Biryani Surprise Box</td>
+                <td style="color:var(--text-sub)">Al-Rehman Kitchen</td>
+                <td style="color:var(--text-sub)">Ahmed R.</td>
+                <td>
+                  <select class="filter-select" style="width:100%">
+                    <option>Select reason...</option>
+                    <option>Food safety concern</option>
+                    <option>Restaurant request</option>
+                    <option>Customer fraud</option>
+                    <option>Listing error</option>
+                    <option>Other</option>
+                  </select>
+                </td>
+                <td><div class="act-row"><button class="act-btn reject" onclick="cancelOrder(this)">🚫 Cancel Order</button><button class="act-btn warn-btn" onclick="alert('Order flagged for review')">🚩 Flag</button></div></td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--accent3)">#FS-8814</td>
+                <td>Pastry Pack ×6</td>
+                <td style="color:var(--text-sub)">Bread & Butter</td>
+                <td style="color:var(--text-sub)">Omar H.</td>
+                <td>
+                  <select class="filter-select" style="width:100%">
+                    <option>Select reason...</option>
+                    <option>Food safety concern</option>
+                    <option>Restaurant request</option>
+                    <option>Customer fraud</option>
+                    <option>Listing error</option>
+                  </select>
+                </td>
+                <td><div class="act-row"><button class="act-btn reject" onclick="cancelOrder(this)">🚫 Cancel Order</button><button class="act-btn warn-btn" onclick="alert('Order flagged for review')">🚩 Flag</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PAYOUTS ── -->
+      <div class="view" id="view-payouts">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">💸 Pending Payouts</div>
+            <button class="act-btn approve" onclick="showToast('Processing all payouts...')">✓ Process All</button>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Restaurant</th><th>Period</th><th>Meals Sold</th><th>Gross</th><th>Platform Fee (15%)</th><th>Net Payout</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600">Al-Rehman Kitchen</td>
+                <td style="color:var(--text-sub);font-size:11px">Mar 20–26</td>
+                <td>142</td>
+                <td class="mono">PKR 24,120</td>
+                <td class="mono" style="color:var(--text-muted)">PKR 3,618</td>
+                <td class="mono" style="color:var(--accent2);font-weight:700">PKR 20,502</td>
+                <td><span class="badge badge-pending">Pending</span></td>
+                <td><button class="act-btn approve" onclick="processPayout(this)">💸 Pay Now</button></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600">Bread & Butter Bakery</td>
+                <td style="color:var(--text-sub);font-size:11px">Mar 20–26</td>
+                <td>89</td>
+                <td class="mono">PKR 19,400</td>
+                <td class="mono" style="color:var(--text-muted)">PKR 2,910</td>
+                <td class="mono" style="color:var(--accent2);font-weight:700">PKR 16,490</td>
+                <td><span class="badge badge-pending">Pending</span></td>
+                <td><button class="act-btn approve" onclick="processPayout(this)">💸 Pay Now</button></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600">Pizza Point DHA</td>
+                <td style="color:var(--text-sub);font-size:11px">Mar 13–19</td>
+                <td>67</td>
+                <td class="mono">PKR 15,750</td>
+                <td class="mono" style="color:var(--text-muted)">PKR 2,363</td>
+                <td class="mono" style="color:var(--accent2);font-weight:700">PKR 13,387</td>
+                <td><span class="badge badge-approved">Paid ✓</span></td>
+                <td><button class="act-btn" onclick="alert('Viewing receipt')">📄 Receipt</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── USERS ── -->
+      <div class="view" id="view-users">
+        <div class="search-row">
+          <input class="search-input" placeholder="Search users by name, phone, email...">
+          <select class="filter-select"><option>All Users</option><option>Customers</option><option>Restaurant Owners</option></select>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">👥 Registered Users (1,204)</div>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>Phone</th><th>Type</th><th>Joined</th><th>Orders</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600">Ahmed Raza</td>
+                <td class="mono" style="font-size:11px">0312-XXXXXXX</td>
+                <td><span class="badge badge-active">Customer</span></td>
+                <td style="color:var(--text-muted);font-size:11px">Jan 2025</td>
+                <td>23</td>
+                <td><span class="badge badge-approved">Active</span></td>
+                <td><div class="act-row"><button class="act-btn">👁</button><button class="act-btn reject" onclick="showToast('User suspended')">🚫 Suspend</button></div></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600">Hamid Mirza</td>
+                <td class="mono" style="font-size:11px">0314-XXXXXXX</td>
+                <td><span class="badge" style="background:rgba(188,140,255,0.1);color:var(--accent5);border:1px solid rgba(188,140,255,0.3)">Restaurant</span></td>
+                <td style="color:var(--text-muted);font-size:11px">Feb 2025</td>
+                <td>—</td>
+                <td><span class="badge badge-approved">Active</span></td>
+                <td><div class="act-row"><button class="act-btn">👁</button><button class="act-btn reject" onclick="showToast('Account suspended')">🚫 Suspend</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── LIVE ACTIVITY ── -->
+      <div class="view" id="view-live">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title"><span class="live-dot" style="width:8px;height:8px;background:var(--success);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;margin-right:6px"></span> Live Activity Feed</div>
+            <div class="panel-action" onclick="showToast('Auto-refresh enabled')">Auto-refresh: ON</div>
+          </div>
+          <div style="padding:0">
+            <div id="activityFeed"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SETTINGS ── -->
+      <div class="view" id="view-settings">
+        <div class="panel" style="max-width:560px">
+          <div class="panel-head"><div class="panel-title">⚙️ System Settings</div></div>
+          <div style="padding:18px;display:flex;flex-direction:column;gap:16px">
+            <div class="info-field">
+              <div class="key">Platform Fee (%)</div>
+              <input class="search-input" value="15" type="number" style="width:120px;margin-top:6px">
+            </div>
+            <div class="info-field">
+              <div class="key">Max Listing Duration (hours)</div>
+              <input class="search-input" value="12" type="number" style="width:120px;margin-top:6px">
+            </div>
+            <div class="info-field">
+              <div class="key">Min Discount Required (%)</div>
+              <input class="search-input" value="40" type="number" style="width:120px;margin-top:6px">
+            </div>
+            <div class="info-field">
+              <div class="key">Cities Active</div>
+              <input class="search-input" value="Karachi, Lahore, Islamabad" style="margin-top:6px">
+            </div>
+            <button class="act-btn approve" style="width:fit-content" onclick="showToast('Settings saved')">Save Settings</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main-area -->
+</div><!-- /root -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── VIEW SWITCHING ──
+function switchView(name, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  const names = {
+    overview: 'Overview', live: 'Live Activity', approvals: 'Restaurant Approvals',
+    'listings-monitor': 'Monitor Listings', orders: 'Orders & Pickups',
+    complaints: 'Complaints', cancel: 'Cancel / Flag Orders', payouts: 'Manage Payouts',
+    users: 'User Management', settings: 'System Settings'
+  };
+  const pn = names[name] || name;
+  document.getElementById('pageName').textContent = pn;
+  document.getElementById('breadSub').textContent = pn;
+
+  if (name === 'live') loadLiveFeed();
+}
+
+// ── LIVE FEED ──
+const events = [
+  { time: 'Just now', icon: '🛍', msg: 'New reservation — #FS-8826 · Daal Makhani Combo · Ahmed R.' },
+  { time: '1 min ago', icon: '✅', msg: 'Order collected — #FS-8819 · Biryani Surprise Box · Al-Rehman Kitchen' },
+  { time: '3 min ago', icon: '➕', msg: 'New listing published — Gulab Jamun Box · Karachi Sweets · 20 qty' },
+  { time: '5 min ago', icon: '🏪', msg: 'Restaurant approved — Pizza Palace PECHS · Admin: Ops Team' },
+  { time: '8 min ago', icon: '⚠️', msg: 'Complaint filed — Listing Mismatch · Bread & Butter · Customer: Bilal S.' },
+  { time: '12 min ago', icon: '🛍', msg: 'New reservation — #FS-8821 · Biryani Box · Ahmed R.' },
+  { time: '15 min ago', icon: '💸', msg: 'Payout processed — Al-Rehman Kitchen · PKR 20,502' },
+  { time: '18 min ago', icon: '👤', msg: 'New user registered — 0321-XXXXXXX · Lahore' },
+  { time: '22 min ago', icon: '📋', msg: 'New listing published — Margherita Pizza · Pizza Point DHA · 5 qty' },
+  { time: '30 min ago', icon: '✅', msg: 'Order collected — #FS-8814 · Pastry Pack · Bread & Butter' },
+];
+
+function loadLiveFeed() {
+  const feed = document.getElementById('activityFeed');
+  feed.innerHTML = events.map((e,i) => `
+    <div style="display:flex;align-items:flex-start;gap:12px;padding:11px 16px;border-bottom:1px solid var(--border2);animation:fadeIn 0.3s ${i*0.05}s ease both;opacity:0">
+      <span style="font-size:16px;flex-shrink:0;margin-top:1px">${e.icon}</span>
+      <div style="flex:1">
+        <div style="font-size:13px;color:var(--text)">${e.msg}</div>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);flex-shrink:0;margin-top:2px">${e.time}</div>
+    </div>
+  `).join('');
+}
+
+// ── ACTIONS ──
+function handleApproval(btn, action) {
+  const card = btn.closest('.approval-card');
+  const name = card.querySelector('.approval-name').textContent;
+  const badge = card.querySelector('.badge');
+  if (action === 'approve') {
+    badge.className = 'badge badge-approved';
+    badge.textContent = 'Approved';
+    card.style.opacity = '0.7';
+    showToast('✓ ' + name + ' approved — they can now publish listings');
+  } else {
+    badge.className = 'badge badge-rejected';
+    badge.textContent = 'Rejected';
+    card.style.opacity = '0.5';
+    showToast('✕ ' + name + ' rejected');
+  }
+}
+
+function removeListing(btn) {
+  if (!confirm('Remove this listing? The restaurant will be notified.')) return;
+  btn.closest('tr').remove();
+  showToast('🚫 Listing removed and restaurant notified');
+}
+
+function cancelOrder(btn) {
+  const row = btn.closest('tr');
+  const id = row.cells[0].textContent;
+  if (!confirm('Cancel order ' + id.trim() + '? Customer will be refunded.')) return;
+  row.cells[5] && (row.cells[5].innerHTML = '<span class="badge badge-rejected">Cancelled</span>');
+  showToast('🚫 Order cancelled — refund initiated');
+}
+
+function resolveComplaint(btn) {
+  const row = btn.closest('tr');
+  row.querySelector('[class*="badge-open"], [class*="badge-investigating"]') &&
+    (row.querySelector('.badge').className = 'badge badge-resolved');
+  row.cells[row.cells.length - 2].innerHTML = '<span class="badge badge-resolved">Resolved</span>';
+  showToast('✓ Complaint marked as resolved');
+}
+
+function processPayout(btn) {
+  const row = btn.closest('tr');
+  const net = row.cells[5].textContent;
+  row.cells[6].innerHTML = '<span class="badge badge-approved">Paid ✓</span>';
+  btn.textContent = '📄 Receipt';
+  btn.classList.remove('approve');
+  btn.onclick = () => alert('Viewing receipt');
+  showToast('💸 Payout of ' + net.trim() + ' processed');
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.display = 'none'; }, 3200);
+}
+</script>
+</body>
+</html>
