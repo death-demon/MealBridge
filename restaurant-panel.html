@@ -90,27 +90,7 @@
   padding: 20px;
 }
 
-/* Mobile: hide sidebar by default */
-@media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%); /* hidden off-screen */
-  }
 
-  .sidebar.active {
-    transform: translateX(0); /* slide in */
-  }
-
-  #mainContent {
-    margin-left: 0; /* no offset */
-  }
-
-  #openSidebar {
-    font-size: 24px;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-}
 
   .sidebar-logo {
     display: flex;
@@ -1189,32 +1169,6 @@ function showToast(msg) {
   toastTimer = setTimeout(() => { t.style.display = 'none'; }, 3000);
 }
 
-const sidebar = document.getElementById("sidebar");
-const openBtn = document.getElementById("openSidebar");
-const closeBtn = document.getElementById("closeSidebar");
-
-// Open sidebar
-openBtn.addEventListener("click", () => {
-  sidebar.classList.add("active");
-});
-
-// Close sidebar
-closeBtn.addEventListener("click", () => {
-  sidebar.classList.remove("active");
-});
-
-// Optional: swipe from left edge
-let startX = 0;
-document.addEventListener("touchstart", e => {
-  startX = e.touches[0].clientX;
-});
-
-document.addEventListener("touchmove", e => {
-  const touchX = e.touches[0].clientX;
-  if (startX < 20 && touchX - startX > 50) { // swipe from left
-    sidebar.classList.add("active");
-  }
-});
 
 // Set today's date default
 const today = new Date().toISOString().split('T')[0];
